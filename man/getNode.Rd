@@ -4,12 +4,13 @@
 \alias{getNode}
 \title{Scrape data for an academic record}
 \usage{
-getNode(id, name)
+getNode(id)
 }
 \description{
 Scrape data for an academic record
 }
 \examples{
-mathGen:::getNode(id = 15860, "John Wilder Tukey")
+mathGen:::getNode(id = 15860) # John Wilder Tukey
+dh <- mathGen:::getNode(id = 7298) # David Hilbert
 }
 

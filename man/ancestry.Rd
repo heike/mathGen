@@ -4,18 +4,14 @@
 \alias{ancestry}
 \title{Get a set number of ancestors based on name and Math Gen ID}
 \usage{
-ancestry(id, name, steps, siblings = FALSE, from = NULL, verbose = FALSE)
+ancestry(id, steps, siblings = FALSE, verbose = FALSE)
 }
 \arguments{
 \item{id}{identifier given to a mathematician in the Mathematics Genealogy Project.}
 
-\item{name}{character, mathematician's name.}
-
 \item{steps}{integer number of number of steps to follow from the root}
 
 \item{siblings}{Boolean specifying the extent of the scrape. Are academic siblings to be reported as well?}
-
-\item{from}{Math Gen ID}
 
 \item{verbose}{Boolean - should results be reported during the scraping? defaults to FALSE.}
 }
@@ -24,17 +20,19 @@ data frame with the following variables
 }
 \description{
 Starting from the given node, doctoral advisors are followed recursively for the specified number of steps. In case no advisor is known, the algorithm stops even if the number of steps is not yet reached.
-Loops in the academic tree (brush??) are problematic - e.g. if a person was advised by two advisors, and one of them was an advisor to the other (advised by both academic brother and father). This results in duplicate entries.
+Loops in the academic tree (thicket??) are problematic - e.g. if a person was advised by two advisors, and one of them was an advisor to the other (advised by both academic brother and father). This results in duplicate entries.
+Each call to ancestry results in multiple requests to the Mathematics Genealogy Project, so use responsibly.
 }
 \examples{
-hw <- ancestry("id.php?id=145799", "Hadley Wickham", steps = 5)
-ancestry("id.php?id=145799", "Hadley Wickham", steps = 2, siblings = TRUE)
-dh <- ancestry("id.php?id=7298", "David Hilbert", steps = 5)
+hw <- ancestry(id = 145799, "Hadley Wickham", steps = 2)
+ancestry(id = 145799, "Hadley Wickham", steps = 2, siblings = TRUE)
+dh <- ancestry(id=7298, "David Hilbert", steps = 5)
+
 library(ggplot2)
 library(geomnet)
-ggplot() + geom_net(data=dh,
-           aes(from_id=advisorMGID, to_id=mgID,
-               label=advisorName), directed=TRUE) +
+ggplot() +
+  geom_net(aes(from_id=factor(advisorMGID), to_id=factor(mgID),
+               label=advisorName), directed=TRUE, data=dh) +
   theme_net() + xlim(c(-0.1, 1.1))
 qplot(x = 1, y=as.numeric(as.character(Year)), data=dh, geom="point") +
   geom_label(aes(label=Name), alpha=0.5)
