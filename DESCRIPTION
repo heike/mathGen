@@ -1,0 +1,17 @@
+Package: mathGen
+Type: Package
+Title: Scraping and Visualizing Relationships from the Math Genealogy Project
+Version: 0.0.1
+Date: 2015-11-06
+Author: Heike Hofmann
+Maintainer: Heike Hofmann <hofmann@iastate.edu>
+Description: The Mathematics Genealogy Project is a database compiling information on mathematicians (and statisticians) all over the world, keeping track of academic doctoral relations. It is a service of the NDSU Department of Mathematics, in association with the American Mathematical Society. We are scraping the available websites and provide visualizations of the academic relationships.
+License: GPL (>= 2)
+LazyData: TRUE
+Depends:
+    R (>= 2.14)
+Imports:
+  XML
+Suggests:
+  ggplot2 (>= 1.0.1.9003),
+  geomnet
