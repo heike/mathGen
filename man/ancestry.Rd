@@ -24,9 +24,10 @@ Loops in the academic tree (thicket??) are problematic - e.g. if a person was ad
 Each call to ancestry results in multiple requests to the Mathematics Genealogy Project, so use responsibly.
 }
 \examples{
-hw <- ancestry(id = 145799, "Hadley Wickham", steps = 2)
-ancestry(id = 145799, "Hadley Wickham", steps = 2, siblings = TRUE)
-dh <- ancestry(id=7298, "David Hilbert", steps = 5)
+\dontrun{
+hw <- ancestry(id = 145799, steps = 2) # Hadley Wickham
+ancestry(id = 145799,  steps = 2, siblings = TRUE) # Hadley Wickham
+dh <- ancestry(id=7298,  steps = 5) # David Hilbert
 
 library(ggplot2)
 library(geomnet)
@@ -34,7 +35,8 @@ ggplot() +
   geom_net(aes(from_id=factor(advisorMGID), to_id=factor(mgID),
                label=advisorName), directed=TRUE, data=dh) +
   theme_net() + xlim(c(-0.1, 1.1))
-qplot(x = 1, y=as.numeric(as.character(Year)), data=dh, geom="point") +
-  geom_label(aes(label=Name), alpha=0.5)
+qplot(y = rep(1:10, length=nrow(dh)), x=as.numeric(as.character(Year)), label = Name,
+      data=dh, geom="label", alpha = I(0.5))
+}
 }
 

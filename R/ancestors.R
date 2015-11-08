@@ -1,8 +1,11 @@
 #' Scrape data for an academic record
 #'
+#' @param id integer number, the identifier of a mathematician in the Mathematics Genealogy Project
 #' @examples
+#' \dontrun{
 #' mathGen:::getNode(id = 15860) # John Wilder Tukey
 #' dh <- mathGen:::getNode(id = 7298) # David Hilbert
+#' }
 getNode <- function(id) {
   url <- sprintf("http://genealogy.math.ndsu.nodak.edu/id.php?id=%s", id)
   kids <- XML::readHTMLTable(url, stringsAsFactors=FALSE)
@@ -71,9 +74,10 @@ getNode <- function(id) {
 #' @return data frame with the following variables
 #' @export
 #' @examples
-#' hw <- ancestry(id = 145799, "Hadley Wickham", steps = 2)
-#' ancestry(id = 145799, "Hadley Wickham", steps = 2, siblings = TRUE)
-#' dh <- ancestry(id=7298, "David Hilbert", steps = 5)
+#' \dontrun{
+#' hw <- ancestry(id = 145799, steps = 2) # Hadley Wickham
+#' ancestry(id = 145799,  steps = 2, siblings = TRUE) # Hadley Wickham
+#' dh <- ancestry(id=7298,  steps = 5) # David Hilbert
 #'
 #' library(ggplot2)
 #' library(geomnet)
@@ -81,10 +85,12 @@ getNode <- function(id) {
 #'   geom_net(aes(from_id=factor(advisorMGID), to_id=factor(mgID),
 #'                label=advisorName), directed=TRUE, data=dh) +
 #'   theme_net() + xlim(c(-0.1, 1.1))
-#' qplot(x = 1, y=as.numeric(as.character(Year)), data=dh, geom="point") +
-#'   geom_label(aes(label=Name), alpha=0.5)
+#' qplot(y = rep(1:10, length=nrow(dh)), x=as.numeric(as.character(Year)), label = Name,
+#'       data=dh, geom="label", alpha = I(0.5))
+#'}
 ancestry <- function(id, steps, siblings = FALSE, verbose = FALSE) {
   res <- ancestryR(id=id, steps= steps, siblings = siblings, from = NULL, verbose = verbose)
+  res <- unique(res)
 
   return(res)
 }
@@ -130,7 +136,9 @@ ancestryR <- function(id, steps, siblings = FALSE, from = NULL, verbose = FALSE)
 #' @return data frame
 #' @export
 #' @examples
+#' \dontrun{
 #' au <- descendants(45024) # Antony Unwin
+#' }
 descendants <- function(id, steps = 3, includeself = TRUE) {
   if (steps < 0) return()
 

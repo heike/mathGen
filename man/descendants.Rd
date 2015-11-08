@@ -20,6 +20,8 @@ data frame
 Descendants of a Mathematician
 }
 \examples{
+\dontrun{
 au <- descendants(45024) # Antony Unwin
+}
 }
 
