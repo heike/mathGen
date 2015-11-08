@@ -70,8 +70,17 @@ getNode <- function(id) {
 #' @param id identifier given to a mathematician in the Mathematics Genealogy Project.
 #' @param steps integer number of number of steps to follow from the root
 #' @param verbose Boolean - should results be reported during the scraping? defaults to FALSE.
-#' @param siblings Boolean specifying the extent of the scrape. Are academic siblings to be reported as well?
 #' @return data frame with the following variables
+#' \itemize{
+#'   \item Name name of the mathematician
+#'   \item mgID Math Gen ID
+#'   \item School university granting the degree
+#'   \item Thesistitle
+#'   \item Degree
+#'   \item Year
+#'   \item advisorName
+#'   \item advisorMGID Math Gen ID of the advisor(s)
+#' }
 #' @export
 #' @examples
 #' \dontrun{
@@ -81,6 +90,7 @@ getNode <- function(id) {
 #'
 #' library(ggplot2)
 #' library(geomnet)
+#' dh <- plyr::rbind.fill(data.frame(advisorMGID=7298, advisorName="David Hilbert"), dh)
 #' ggplot() +
 #'   geom_net(aes(from_id=factor(advisorMGID), to_id=factor(mgID),
 #'                label=advisorName), directed=TRUE, data=dh) +
@@ -88,45 +98,29 @@ getNode <- function(id) {
 #' qplot(y = rep(1:10, length=nrow(dh)), x=as.numeric(as.character(Year)), label = Name,
 #'       data=dh, geom="label", alpha = I(0.5))
 #'}
-ancestry <- function(id, steps, siblings = FALSE, verbose = FALSE) {
-  res <- ancestryR(id=id, steps= steps, siblings = siblings, from = NULL, verbose = verbose)
-  res <- unique(res)
+ancestry <- function(id, steps, verbose = FALSE, includeself = TRUE) {
+  res <- NULL
+  if (steps < 0) return(res)
 
-  return(res)
-}
-
-#' Helper function with additional recursive parameters
-#'
-#' @inheritParams ancestry
-#' @param from Math Gen id of the mathematician to follow upwards
-ancestryR <- function(id, steps, siblings = FALSE, from = NULL, verbose = FALSE) {
   self <- getNode(id)
-  if (!siblings) {
-    if (!is.null(from)) {
-      res <- subset(self$advisees, mgID == from)
-    } else {
-      res <- self$advisees
-    }
-    from <- id
-  } else {
-    res <- self$advisees
-  }
-  if(!is.null(res)) {
-    res$step <- steps
-    if (verbose) print(res)
-  }
-  if (steps == 0) return(res)
+#  browser()
+  if (is.null(self$advisor)) return(res)
 
-  if (length(self$advisor$mgID) > 0) {
-    for (i in 1:length(self$advisor$mgID)) {
-      resi <- ancestryR(self$advisor$mgID[i], steps = steps-1, siblings = siblings,
-                        verbose = verbose, from = from)
-      res <- plyr::rbind.fill(resi, res)
-    }
+  for (i in 1:nrow(self$advisor)) {
+    resi <- ancestry(self$advisor$mgID[i], steps = steps - 1,
+                         verbose = verbose, includeself = TRUE)
+    res <- plyr::rbind.fill(res, resi)
   }
 
+  if (includeself) {
+    self$self <- data.frame(self$self,
+               advisorName = self$advisor$Name,
+               advisorMGID = self$advisor$mgID)
+    res <- plyr::rbind.fill(self$self, res)
+  }
   return(res)
 }
+
 
 #' Descendants of a Mathematician
 #'

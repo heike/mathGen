@@ -4,19 +4,27 @@
 \alias{ancestry}
 \title{Get a set number of ancestors based on name and Math Gen ID}
 \usage{
-ancestry(id, steps, siblings = FALSE, verbose = FALSE)
+ancestry(id, steps, verbose = FALSE, includeself = TRUE)
 }
 \arguments{
 \item{id}{identifier given to a mathematician in the Mathematics Genealogy Project.}
 
 \item{steps}{integer number of number of steps to follow from the root}
 
-\item{siblings}{Boolean specifying the extent of the scrape. Are academic siblings to be reported as well?}
-
 \item{verbose}{Boolean - should results be reported during the scraping? defaults to FALSE.}
 }
 \value{
 data frame with the following variables
+\itemize{
+  \item Name name of the mathematician
+  \item mgID Math Gen ID
+  \item School university granting the degree
+  \item Thesistitle
+  \item Degree
+  \item Year
+  \item advisorName
+  \item advisorMGID Math Gen ID of the advisor(s)
+}
 }
 \description{
 Starting from the given node, doctoral advisors are followed recursively for the specified number of steps. In case no advisor is known, the algorithm stops even if the number of steps is not yet reached.
@@ -31,6 +39,7 @@ dh <- ancestry(id=7298,  steps = 5) # David Hilbert
 
 library(ggplot2)
 library(geomnet)
+
 ggplot() +
   geom_net(aes(from_id=factor(advisorMGID), to_id=factor(mgID),
                label=advisorName), directed=TRUE, data=dh) +
