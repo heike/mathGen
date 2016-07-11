@@ -8,11 +8,14 @@
 #' }
 getNode <- function(id) {
   url <- sprintf("http://genealogy.math.ndsu.nodak.edu/id.php?id=%s", id)
-  kids <- XML::readHTMLTable(url, stringsAsFactors=FALSE)
+  tabs <- httr::GET(url)
+  kids <- XML::readHTMLTable(rawToChar(tabs$content), stringsAsFactors = F)
+
+#  kids <- XML::readHTMLTable(url, stringsAsFactors=FALSE)
   if (length(kids) > 0) kids <- kids[[1]]
   else kids <- NULL
 
-  doc <- XML::htmlParse(url)
+  doc <- XML::htmlParse(tabs)
   who <- XML::getNodeSet(doc, "//h2")
   name <- trimws(XML::xmlValue(who[[1]]))
   self <- data.frame(Name = name, mgID = id, stringsAsFactors = FALSE)
@@ -84,16 +87,16 @@ getNode <- function(id) {
 #' @export
 #' @examples
 #' \dontrun{
-#' hw <- ancestry(id = 145799, steps = 2) # Hadley Wickham
+#' hw <- ancestry(id = 145799, steps = 3) # Hadley Wickham
 #' ancestry(id = 145799,  steps = 2, siblings = TRUE) # Hadley Wickham
 #' dh <- ancestry(id=7298,  steps = 5) # David Hilbert
 #'
 #' library(ggplot2)
 #' library(geomnet)
-#' dh <- plyr::rbind.fill(data.frame(advisorMGID=7298, advisorName="David Hilbert"), dh)
+#' hw <- plyr::rbind.fill(data.frame(advisorMGID=145799, advisorName="Hadley Alexander Wickham"), hw)
 #' ggplot() +
 #'   geom_net(aes(from_id=factor(advisorMGID), to_id=factor(mgID),
-#'                label=advisorName), directed=TRUE, data=dh) +
+#'                label=advisorName), directed=TRUE, data=hw) +
 #'   theme_net() + xlim(c(-0.1, 1.1))
 #' qplot(y = rep(1:10, length=nrow(dh)), x=as.numeric(as.character(Year)), label = Name,
 #'       data=dh, geom="label", alpha = I(0.5))
