@@ -72,6 +72,7 @@ getNode <- function(id) {
 #' Each call to ancestry results in multiple requests to the Mathematics Genealogy Project, so use responsibly.
 #' @param id identifier given to a mathematician in the Mathematics Genealogy Project.
 #' @param steps integer number of number of steps to follow from the root
+#' @param includeself include information on the starting id into the output? defaults to TRUE
 #' @param verbose Boolean - should results be reported during the scraping? defaults to FALSE.
 #' @return data frame with the following variables
 #' \itemize{
@@ -87,7 +88,7 @@ getNode <- function(id) {
 #' @export
 #' @examples
 #' \dontrun{
-#' hw <- ancestry(id = 145799, steps = 3) # Hadley Wickham
+#' hw <- ancestry(id = 145799, steps = 4) # Hadley Wickham
 #' ancestry(id = 145799,  steps = 2, siblings = TRUE) # Hadley Wickham
 #' dh <- ancestry(id=7298,  steps = 5) # David Hilbert
 #'
